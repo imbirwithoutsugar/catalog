@@ -639,6 +639,9 @@ def create_package_zip(manifest, type, output_dir) -> str:
                 if location:
                     files_to_add.append(location)
 
+    if not files_to_add:
+        return None
+
     with zipfile.ZipFile(package_path, 'w', zipfile.ZIP_DEFLATED) as package_zip:
         if os.path.exists(source_manifest_path):
             package_zip.write(source_manifest_path, arcname="manifest.yml")
@@ -724,7 +727,7 @@ def process_manifest(manifest, type) -> None:
             if manifest.get("modfiles"):
                 full_data["modfiles"] = manifest["modfiles"]
 
-        if package_filename:
+        if package_filename is not None:
             full_data["package"] = package_filename
 
         # Generate security info (SHA-256 checksums + optional ClamAV scan)
