@@ -6,7 +6,7 @@ sources:
 executionfile:
   type: binary
   location:
-    origin: https://github.com/lilka-dev/PicoPico/releases/download/v0.0.1/picopico_lilka.bin
+    origin: https://github.com/lilka-dev/PicoPico/releases/download/v0.0.2/picopico_lilka.bin
 short_description: Pico-8 плеєр для Лілки на ESP32-S3
 description: "@DESCRIPTION.md"
 author: "@black-ghost-off"
