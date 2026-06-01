@@ -1,4 +1,6 @@
-name: Lilwatchface (LUA)
+name:
+  uk: Lilwatchface (LUA)
+  en: Lilwatchface (LUA)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/aisaiev/lilwatchface/refs/heads/main/lilwatchface.lua
-short_description: JSON-like watchface app for Лілка
+short_description:
+  uk: Застосунок циферблату у JSON-стилі для Лілки
+  en: JSON-like watchface app for Lilka
 description: "@DESCRIPTION.md"
 author: "@aisaiev"
 license: NONE

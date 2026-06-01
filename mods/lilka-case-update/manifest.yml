@@ -1,5 +1,9 @@
-name: "Lilka case update"
-short_description: "Updated Case Back to Fit Larger Battery and Taller Buttons"
+name:
+  uk: "Оновлення корпусу Lilka"
+  en: "Lilka case update"
+short_description:
+  uk: "Оновлена задня частина корпусу для більшого акумулятора і вищих кнопок"
+  en: "Updated case back to fit larger battery and taller buttons"
 description: "@DESCRIPTION.md"
 author: "@JohnDoe_3156660"
 icon: "image.png"

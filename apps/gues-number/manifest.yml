@@ -1,4 +1,6 @@
-name: Вгадай число
+name:
+  uk: Вгадай число
+  en: Guess the Number
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/sverdlyuk/gues-number/refs/heads/main/gues-number.lua
-short_description: Проста але цікава гра з вгадуванням числа  
+short_description:
+  uk: Проста але цікава гра з вгадуванням числа
+  en: Simple but fun number guessing game
 description: "@DESCRIPTION.md"
 author: "@sverdlyuk"
 license: MIT

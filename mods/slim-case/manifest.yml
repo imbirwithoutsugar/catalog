@@ -1,5 +1,9 @@
-name: "Slim case for Lilka"
-short_description: "Slim case for full Lilka set from IMRAD.com.ua"
+name:
+  uk: "Тонкий корпус для Lilka"
+  en: "Slim case for Lilka"
+short_description:
+  uk: "Тонкий корпус для повного комплекту Lilka від IMRAD.com.ua"
+  en: "Slim case for full Lilka set from IMRAD.com.ua"
 description: "@DESCRIPTION.md"
 author: "@BFB_Workshop_1838755"
 icon: "image1.png"

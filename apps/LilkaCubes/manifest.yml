@@ -1,4 +1,6 @@
-name: Гра "Кубики" (LUA)
+name:
+  uk: Гра "Кубики" (LUA)
+  en: Dice Game (LUA)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/andrijpv/LilkaCubes/refs/heads/main/lilkacubes.lua
-short_description: Проста та захоплююча гра в кубики, розроблена для консолі Lilka
+short_description:
+  uk: Проста та захоплююча гра в кубики, розроблена для консолі Lilka
+  en: Simple and engaging dice game for the Lilka console
 description: "@DESCRIPTION.md"
 author: "@andrijpv"
 license: NONE

@@ -1,4 +1,6 @@
-name: Matrix Rain (LUA)
+name:
+  uk: Matrix Rain (LUA)
+  en: Matrix Rain (LUA)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/k3kukua/lilka-matrix-rain/refs/heads/main/matrix_rain.lua
-short_description: Анімована графічна заставка "Matrix Rain" для Kiera OS
+short_description:
+  uk: Анімована графічна заставка "Matrix Rain" для Kiera OS
+  en: Animated Matrix Rain screensaver for Kiera OS
 description: "@DESCRIPTION.md"
 author: "@k3kukua"
 license: NONE

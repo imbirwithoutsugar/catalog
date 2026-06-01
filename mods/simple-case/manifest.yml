@@ -1,5 +1,9 @@
-name: "Simple case for Lilka dev board"
-short_description: "Light and simple case for Lilka Dev board by Anderson"
+name:
+  uk: "Простий корпус для Lilka Dev Board"
+  en: "Simple case for Lilka dev board"
+short_description:
+  uk: "Легкий і простий корпус для Lilka Dev Board від Anderson"
+  en: "Light and simple case for Lilka dev board by Anderson"
 description: "@DESCRIPTION.md"
 author: "@Sartor_811616"
 icon: "image1.png"

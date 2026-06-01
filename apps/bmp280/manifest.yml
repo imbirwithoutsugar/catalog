@@ -1,4 +1,6 @@
-name: Lilka BMP280 (LUA)
+name:
+  uk: Lilka BMP280 (LUA)
+  en: Lilka BMP280 (LUA)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/sverdlyuk/bmp280-lilka-lua/refs/heads/main/bmp280%2Bbme280_lilka.lua
-short_description: Застосунок для виміру температури та тиску за допомогою сенсора BMP280
+short_description:
+  uk: Застосунок для виміру температури та тиску за допомогою сенсора BMP280
+  en: Application for measuring temperature and pressure using the BMP280 sensor
 description: "@DESCRIPTION.md"
 author: "@sverdlyuk"
 license: MIT

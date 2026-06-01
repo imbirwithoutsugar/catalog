@@ -1,4 +1,6 @@
-name: HC-SR04P — датчик відстані (LUA)
+name:
+  uk: HC-SR04P — датчик відстані (LUA)
+  en: HC-SR04P — Distance Sensor (LUA)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/sverdlyuk/lilka-hc-sr04p/refs/heads/main/hc-sr04p.lua
-short_description: Ультразвуковий датчик HC-SR04P
+short_description:
+  uk: Ультразвуковий датчик HC-SR04P
+  en: HC-SR04P ultrasonic distance sensor
 description: "@DESCRIPTION.md"
 author: "@sverdlyuk"
 license: MIT

@@ -1,4 +1,6 @@
-name: Asteroids (LUA)
+name:
+  uk: Asteroids (LUA)
+  en: Asteroids (LUA)
 sources:
   type: git
   location:
@@ -7,8 +9,12 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/lilka-dev/examples/refs/heads/main/LUA/asteroids/asteroids.lua
-short_description: Виживи серед астероїдів. Літай, стріляй, ухиляйся
-description: "@DESCRIPTION.md"
+short_description:
+  uk: Виживи серед астероїдів. Літай, стріляй, ухиляйся
+  en: Survive among asteroids. Fly, shoot, dodge
+short_description:
+  uk: Виживи серед астероїдів. Літай, стріляй, ухиляйся
+  en: Survive among asteroids. Fly, shoot, and dodge
 author: "@and3rson"
 license: NONE
 keira_version: 1.0.0

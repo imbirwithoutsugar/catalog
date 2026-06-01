@@ -1,4 +1,6 @@
-name: Lilradio (C/C++)
+name:
+  uk: Lilradio (C/C++)
+  en: Lilradio (C/C++)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: binary
   location:
     origin: https://github.com/aisaiev/lilradio/releases/download/v1/lilradio.bin
-short_description: FM радіо приймач модуль для Лілки
+short_description:
+  uk: FM радіо приймач модуль для Лілки
+  en: FM radio receiver module for Lilka
 description: "@DESCRIPTION.md"
 author: "@aisaiev"
 license: NONE

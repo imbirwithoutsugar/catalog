@@ -1,4 +1,6 @@
-name: Хрестики-нулики для Лілки (LUA)
+name:
+  uk: Хрестики-нулики для Лілки (LUA)
+  en: Tic-Tac-Toe for Lilka (LUA)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/sverdlyuk/tic-tac-toe-lilka/refs/heads/main/tic_tac_toe.lua
-short_description: Класична гра "Хрестики-нулики" з AI для платформи Лілка
+short_description:
+  uk: Класична гра "Хрестики-нулики" з AI для платформи Лілка
+  en: Classic Tic-Tac-Toe game with AI for Lilka
 description: "@DESCRIPTION.md"
 author: "@sverdlyuk"
 license: NONE

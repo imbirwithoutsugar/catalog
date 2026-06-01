@@ -1,6 +1,10 @@
-name: Lilka Desktop Monitor
+name:
+  uk: Lilka Desktop Monitor
+  en: Lilka Desktop Monitor
 keira_version: 1.0.1
-short_description: Stream your computer screen to Lilka over WiFi
+short_description:
+  uk: Трансляція екрана комп'ютера на Лілку через WiFi
+  en: Stream your computer screen to Lilka over WiFi
 description: "@DESCRIPTION.md"
 changelog: "@CHANGELOG.md"
 author: "@aisaiev"

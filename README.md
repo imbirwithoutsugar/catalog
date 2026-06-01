@@ -11,17 +11,20 @@ A static website for browsing Lilka apps and mods.
   - Download link for packaged ZIP (`manifest.yml` + entry/mod/additional files)
   - Source repository links
   - Icons and screenshots
+- **Localization**: English and Ukrainian (`uk`, `en`) content with a language
+  switcher in the site header. Default/fallback language is Ukrainian (`uk`).
 
 ## File Structure
 
 ```
 apps/                   # Source apps directory
 ├── [app-name].app/
-│   ├── manifest.yml    # App manifest
-│   ├── DESCRIPTION.md  # Full description
-│   ├── CHANGELOG.md    # Version history
-│   ├── icon.png        # App icon
-│   └── screenshot*.png # Screenshots
+│   ├── manifest.yml      # App manifest
+│   ├── DESCRIPTION.uk.md # Full description (Ukrainian)
+│   ├── DESCRIPTION.en.md # Full description (English)
+│   ├── CHANGELOG.md      # Version history
+│   ├── icon.png          # App icon
+│   └── screenshot*.png   # Screenshots
 
 mods/                   # Source mods directory
 ├── [mod-name].case/
@@ -132,6 +135,51 @@ modfiles:
 ```
 
 3. Add required files (or use URLs from your repository) and submit a Pull Request
+
+### Localization (English & Ukrainian)
+
+The catalog supports two content languages: Ukrainian (`uk`, default/fallback)
+and English (`en`). Localizable manifest fields are `name`, `short_description`,
+`description`, and `changelog`.
+
+There are two ways to provide localized content:
+
+1. **Localized markdown files** for long-form fields (`description`, `changelog`).
+   Reference the base file in the manifest and add language-suffixed siblings:
+
+   ```yaml
+   description: "@DESCRIPTION.md"   # build resolves DESCRIPTION.uk.md / DESCRIPTION.en.md
+   changelog: "@CHANGELOG.md"       # build resolves CHANGELOG.uk.md / CHANGELOG.en.md
+   ```
+
+   Then create:
+   - `DESCRIPTION.uk.md` — Ukrainian
+   - `DESCRIPTION.en.md` — English
+
+   If only a non-localized `DESCRIPTION.md` exists, it is used as the Ukrainian
+   (default-language) content, so existing single-language apps keep working.
+
+2. **Inline localized values** for short fields (`name`, `short_description`):
+
+   ```yaml
+   name:
+     uk: Таймер
+     en: Timer
+   short_description:
+     uk: Простий таймер зворотного відліку зі звуковим сповіщенням
+     en: A simple countdown timer with a sound notification
+   ```
+
+   A plain string is still accepted and is treated as the default language:
+
+   ```yaml
+   name: Таймер
+   ```
+
+The build writes a `localization` object and a `languages` list into each
+`index.json` / `index_short.json`. The site's language switcher uses this data
+and falls back to Ukrainian (then any available language) when a translation is
+missing.
 
 ### Validation
 

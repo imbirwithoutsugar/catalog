@@ -6,12 +6,83 @@ class LilkaRepository {
     this.manifests = [];
     this.currentScreenshots = [];
     this.currentLightboxIndex = 0;
+    this.supportedLanguages = ['uk', 'en'];
+    this.defaultLanguage = 'uk';
+    this.currentLang = this.loadLanguage();
     this.init();
+  }
+
+  loadLanguage() {
+    let lang = null;
+    try {
+      lang = localStorage.getItem('lilka-lang');
+    } catch (e) {
+      lang = null;
+    }
+    if (!this.supportedLanguages.includes(lang)) {
+      const browser = (navigator.language || '').slice(0, 2).toLowerCase();
+      lang = this.supportedLanguages.includes(browser) ? browser :
+                                                          this.defaultLanguage;
+    }
+    return lang;
+  }
+
+  setLanguage(lang) {
+    if (!this.supportedLanguages.includes(lang) || lang === this.currentLang) {
+      return;
+    }
+    this.currentLang = lang;
+    try {
+      localStorage.setItem('lilka-lang', lang);
+    } catch (e) {
+      // ignore storage errors (private mode, etc.)
+    }
+    this.updateLangSwitcher();
+    this.refreshLocalizedContent();
+  }
+
+  updateLangSwitcher() {
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === this.currentLang);
+    });
+    document.documentElement.lang = this.currentLang;
+  }
+
+  // Re-render currently visible content using the selected language
+  refreshLocalizedContent() {
+    if (this.currentType === 'authors') {
+      this.showAuthors();
+    } else if (this.currentType !== 'docs' && this.currentType !== 'examples') {
+      this.loadPage();
+    }
+    // If a modal is open, re-render it with the new language
+    const modal = document.getElementById('modal');
+    if (modal && modal.style.display === 'block' && this._currentManifest &&
+        this._currentManifestName) {
+      this.showModal(this._currentManifest, this._currentManifestName);
+    }
+  }
+
+  // Return the value of a localizable field for the current language,
+  // falling back to the default language and then the top-level field.
+  localized(item, field) {
+    if (item && item.localization) {
+      const order = [this.currentLang, this.defaultLanguage].concat(
+          this.supportedLanguages);
+      for (const lang of order) {
+        const entry = item.localization[lang];
+        if (entry && entry[field] != null && entry[field] !== '') {
+          return entry[field];
+        }
+      }
+    }
+    return item ? item[field] : undefined;
   }
 
   init() {
     this.setupEventListeners();
     this.setupLightboxListeners();
+    this.updateLangSwitcher();
     this.handleRouting();
   }
 
@@ -191,6 +262,17 @@ class LilkaRepository {
   }
 
   setupEventListeners() {
+    // Language switcher
+    document.querySelectorAll('.lang-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const lang = e.currentTarget.dataset.lang;
+        if (window.umami) {
+          window.umami.track('language-switch', {lang});
+        }
+        this.setLanguage(lang);
+      });
+    });
+
     // Tab switching
     document.querySelectorAll('.tab-button').forEach(button => {
       button.addEventListener('click', (e) => {
@@ -247,6 +329,8 @@ class LilkaRepository {
 
     closeBtn.addEventListener('click', () => {
       modal.style.display = 'none';
+      this._currentManifest = null;
+      this._currentManifestName = null;
       // Return to list view URL
       this.updateURL(this.currentType, this.currentPage);
     });
@@ -254,6 +338,8 @@ class LilkaRepository {
     window.addEventListener('click', (e) => {
       if (e.target === modal) {
         modal.style.display = 'none';
+        this._currentManifest = null;
+        this._currentManifestName = null;
         // Return to list view URL
         this.updateURL(this.currentType, this.currentPage);
       }
@@ -263,6 +349,8 @@ class LilkaRepository {
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && modal.style.display === 'block') {
         modal.style.display = 'none';
+        this._currentManifest = null;
+        this._currentManifestName = null;
         // Return to list view URL
         this.updateURL(this.currentType, this.currentPage);
       }
@@ -271,6 +359,8 @@ class LilkaRepository {
     // Handle browser back/forward buttons
     window.addEventListener('popstate', (e) => {
       modal.style.display = 'none';
+      this._currentManifest = null;
+      this._currentManifestName = null;
       this.handleRouting();
     });
   }
@@ -719,18 +809,20 @@ class LilkaRepository {
         const iconPath =
             item.icon ? `${item.type}/${item.path}/static/${item.icon}` : '';
         const typeLabel = item.type === 'apps' ? 'App' : 'Mod';
+        const itemName = this.localized(item, 'name');
+        const itemShortDesc = this.localized(item, 'short_description') || '';
         html += `<div class="author-item-card" data-item-type="${
             item.type}" data-item-path="${this.escapeHtml(item.path)}">`;
         if (item.icon) {
           html += `<img src="${iconPath}" alt="${
               this.escapeHtml(
-                  item.name)}" class="icon" onerror="this.style.display='none'">`;
+                  itemName)}" class="icon" onerror="this.style.display='none'">`;
         }
-        html += `<h3>${this.escapeHtml(item.name)}</h3>`;
+        html += `<h3>${this.escapeHtml(itemName)}</h3>`;
         html += `<span class="author-item-type type-${item.type}">${
             typeLabel}</span>`;
         html += `<div class="short-desc">${
-            this.escapeHtml(item.short_description)}</div>`;
+            this.escapeHtml(itemShortDesc)}</div>`;
         html += `</div>`;
       }
 
@@ -845,21 +937,23 @@ class LilkaRepository {
         `${this.currentType}/${manifestName}/static/${manifest.icon}`;
 
     const authorId = this.authorSlug(manifest.author);
+    const cardName = this.localized(manifest, 'name');
+    const cardShortDesc = this.localized(manifest, 'short_description') || '';
     card.innerHTML = `
             ${
         manifest.icon ?
             `<img src="${iconPath}" alt="${
-                manifest
-                    .name}" class="icon" onerror="this.style.display='none'">` :
+                this.escapeHtml(
+                    cardName)}" class="icon" onerror="this.style.display='none'">` :
             ''}
-            <h3>${this.escapeHtml(manifest.name)}</h3>
+            <h3>${this.escapeHtml(cardName)}</h3>
             <div class="author"><a href="?type=authors&author=${
         encodeURIComponent(
             manifest.author)}" class="author-link" data-author="${
         this.escapeHtml(
             manifest.author)}">${this.escapeHtml(manifest.author)}</a></div>
             <div class="short-desc">${
-        this.escapeHtml(manifest.short_description)}</div>
+        this.escapeHtml(cardShortDesc)}</div>
         `;
 
     // Author link click — navigate to authors page
@@ -889,6 +983,16 @@ class LilkaRepository {
 
   showModal(manifest, manifestName) {
     console.log('Opening modal for:', manifestName, manifest);
+
+    // Remember the currently open manifest so it can be re-rendered when the
+    // language is switched while the modal is open.
+    this._currentManifest = manifest;
+    this._currentManifestName = manifestName;
+
+    // Resolve localized text fields for the current language
+    const modalName = this.localized(manifest, 'name');
+    const modalDescription = this.localized(manifest, 'description');
+    const modalChangelog = this.localized(manifest, 'changelog');
 
     // Track manifest views
     if (window.umami) {
@@ -1143,7 +1247,7 @@ class LilkaRepository {
 
     modalBody.innerHTML = `
             <div class="modal-header">
-                <h2>${this.escapeHtml(manifest.name)}</h2>
+                <h2>${this.escapeHtml(modalName)}</h2>
                 <div class="author"><a href="?type=authors&author=${
         encodeURIComponent(
             manifest.author)}" class="author-link" data-author="${
@@ -1153,27 +1257,27 @@ class LilkaRepository {
             ${
         manifest.icon ?
             `<img src="${iconPath}" alt="${
-                manifest
-                    .name}" class="modal-icon" onerror="this.style.display='none'">` :
+                this.escapeHtml(
+                    modalName)}" class="modal-icon" onerror="this.style.display='none'">` :
             ''}
             ${screenshotsSection}
             ${
-        manifest.description && manifest.description.trim() ?
+        modalDescription && modalDescription.trim() ?
             `
             <div class="modal-section">
                 <h3>📝 Description</h3>
                 <div class="markdown-content">${
-                marked.parse(manifest.description)}</div>
+                marked.parse(modalDescription)}</div>
             </div>
             ` :
             ''}
             ${
-        manifest.changelog && manifest.changelog.trim() ?
+        modalChangelog && modalChangelog.trim() ?
             `
             <div class="modal-section">
                 <h3>📋 Changelog</h3>
                 <div class="markdown-content">${
-                marked.parse(manifest.changelog)}</div>
+                marked.parse(modalChangelog)}</div>
             </div>
             ` :
             ''}

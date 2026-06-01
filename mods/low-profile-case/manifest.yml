@@ -1,5 +1,9 @@
-name: "Low profile case for Lilka dev board"
-short_description: "Корпус для Лілки \"квадратіш, практіш, ґут\" під утоплений дисплей"
+name:
+  uk: "Низькопрофільний корпус для Lilka Dev Board"
+  en: "Low profile case for Lilka dev board"
+short_description:
+  uk: "Корпус для Лілки \"квадратіш, практіш, ґут\" під утоплений дисплей"
+  en: "Compact low-profile case for Lilka dev board with recessed display"
 description: "@DESCRIPTION.md"
 author: "@Olexii_2870507"
 icon: "image1.png"

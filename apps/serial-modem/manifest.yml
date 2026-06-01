@@ -1,6 +1,10 @@
-name: Serial Modem
+name:
+  uk: Serial Modem
+  en: Serial Modem
 keira_version: 1.0.0
-short_description: A Hayes-compatible WiFi modem for Lilka
+short_description:
+  uk: Hayes-сумісний WiFi-модем для Лілки
+  en: A Hayes-compatible WiFi modem for Lilka
 description: "@DESCRIPTION.md"
 author: "@aisaiev"
 license: GPL-3.0

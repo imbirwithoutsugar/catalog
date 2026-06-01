@@ -113,6 +113,49 @@ header h1 {
     letter-spacing: 0.01em;
 }
 
+/* Language switcher */
+.lang-switcher {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.2rem;
+    border-radius: 999px;
+    background: var(--primary-glow);
+    border: 1px solid var(--border-solid);
+}
+
+.lang-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.lang-btn:hover {
+    color: var(--text);
+    background-color: var(--primary-glow);
+}
+
+.lang-btn.active {
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary-color), var(--pink));
+}
+
+@media (max-width: 600px) {
+    .lang-switcher {
+        position: static;
+        margin-top: 0.75rem;
+    }
+}
+
 /* Header border glow */
 header .header-border {
     position: absolute;

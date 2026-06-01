@@ -1,4 +1,6 @@
-name: Гра "ЧуВаЧі" камінь-ножниці-папір (LUA)
+name:
+  uk: Гра "ЧуВаЧі" камінь-ножниці-папір (LUA)
+  en: ChuVaChi Rock-Paper-Scissors (LUA)
 sources:
   type: git
   location:
@@ -20,7 +22,9 @@ files:
     location:
       origin: https://raw.githubusercontent.com/andrijpv/LIlkaChuVaChi/refs/heads/main/filegame/stone.bmp
     description: Stone image
-short_description: Класична гра "ЧуВаЧі" камінь-ножниці-папір для Kiera OS
+short_description:
+  uk: Класична гра "ЧуВаЧі" камінь-ножниці-папір для Kiera OS
+  en: Classic rock-paper-scissors game for Kiera OS
 description: "@DESCRIPTION.md"
 author: "@andrijpv"
 license: NONE

@@ -1,5 +1,9 @@
-name: "Case for Lilka dev board"
-short_description: "Корпус для плати Лілка який легко друкувати"
+name:
+  uk: "Корпус для Lilka Dev Board"
+  en: "Case for Lilka dev board"
+short_description:
+  uk: "Корпус для плати Лілка, який легко друкувати"
+  en: "Easy-to-print case for Lilka dev board"
 description: "@DESCRIPTION.md"
 author: "@Shashel_1353421"
 icon: "image1.png"

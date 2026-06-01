@@ -1,6 +1,10 @@
-name: Лілка AI
+name:
+  uk: Лілка AI
+  en: Lilka AI
 keira_version: 1.0.1
-short_description: OpenAI чат для Лілки
+short_description:
+  uk: OpenAI чат для Лілки
+  en: OpenAI chat for Lilka
 description: "@DESCRIPTION.md"
 changelog: "@CHANGELOG.md"
 author: "@aisaiev"

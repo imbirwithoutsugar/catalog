@@ -1,4 +1,6 @@
-name: Pong (mJS)
+name:
+  uk: Pong (mJS)
+  en: Pong (mJS)
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ entryfile:
   type: js
   location:
     origin: https://raw.githubusercontent.com/lilka-dev/examples/refs/heads/main/js/pong.js
-short_description: Класична гра Pong
+short_description:
+  uk: Класична гра Pong
+  en: Classic Pong game
 description: "@DESCRIPTION.md"
 author: "@black-ghost-off"
 license: MIT

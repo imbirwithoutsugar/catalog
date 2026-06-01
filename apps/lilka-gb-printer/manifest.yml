@@ -1,6 +1,10 @@
-name: Lilka Game Boy Printer
+name:
+  uk: Lilka Game Boy Printer
+  en: Lilka Game Boy Printer
 keira_version: 1.1.1
-short_description: Capture images sent from Game Boy Camera or other Game Boy Printer compatible games, displays them on the Lilka screen, saves to SD card, and provides a web interface for wireless image reception and viewing
+short_description:
+  uk: Захоплює зображення з Game Boy Camera та інших сумісних ігор, показує на екрані Лілки, зберігає на SD-картку і надає веб-інтерфейс
+  en: Capture images sent from Game Boy Camera or other Game Boy Printer compatible games, display them on Lilka, save to SD card, and view via web interface
 description: "@DESCRIPTION.md"
 changelog: "@CHANGELOG.md"
 author: "@aisaiev"

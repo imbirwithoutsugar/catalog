@@ -680,6 +680,14 @@ def process_manifest(manifest, type) -> None:
                 "name": manifest["name"],
                 "short_description": manifest["short_description"]
             }
+            # Include localized name/short_description for the catalog UI
+            if manifest.get("languages"):
+                short_data["languages"] = manifest["languages"]
+            if manifest.get("localization"):
+                short_data["localization"] = {
+                    lang: {k: v for k, v in entry.items() if k in ("name", "short_description")}
+                    for lang, entry in manifest["localization"].items()
+                }
             # Include entryfile if it exists (new format)
             if manifest.get("entryfile"):
                 short_data["entryfile"] = manifest["entryfile"]
@@ -698,6 +706,13 @@ def process_manifest(manifest, type) -> None:
             "sources": manifest["sources"],
             "screenshots": manifest.get("screenshots", [])
         }
+        
+        # Include localization data (name, short_description, description, changelog
+        # per language) plus the list of available languages for the catalog UI.
+        if manifest.get("languages"):
+            full_data["languages"] = manifest["languages"]
+        if manifest.get("localization"):
+            full_data["localization"] = manifest["localization"]
         
         # Only include icon if it exists
         if manifest.get("icon"):
@@ -893,6 +908,139 @@ def validate_app_files(src, manifest, type) -> bool:
     
     return validation_results['is_valid']
 
+# ============================================================================
+# Localization support
+# ============================================================================
+# Supported UI/content languages. Ukrainian is the default/fallback language
+# because most of the existing catalog content is written in Ukrainian.
+SUPPORTED_LANGUAGES = ['uk', 'en']
+DEFAULT_LANGUAGE = 'uk'
+
+
+def _read_text_file(path) -> str:
+    with open(path, 'r', encoding='utf-8') as f:
+        return f.read()
+
+
+def resolve_localized_markdown(src, type, ref) -> dict:
+    """Resolve a markdown file reference into a ``{lang: content}`` mapping.
+
+    For a reference such as ``DESCRIPTION.md`` this looks for localized
+    siblings ``DESCRIPTION.uk.md`` and ``DESCRIPTION.en.md``. If no localized
+    file is found for the default language, it falls back to the plain
+    ``DESCRIPTION.md`` file so existing single-language apps keep working.
+    """
+    base_dir = os.path.join(type + "s", src)
+    root, ext = os.path.splitext(ref)
+    result = {}
+
+    for lang in SUPPORTED_LANGUAGES:
+        candidate = os.path.join(base_dir, f"{root}.{lang}{ext}")
+        if os.path.exists(candidate):
+            try:
+                result[lang] = _read_text_file(candidate)
+            except Exception as e:
+                add_warning(src, "file_read_error",
+                            f"Failed to read {root}.{lang}{ext}: {str(e)}", type)
+
+    # Fallback to the non-localized base file for the default language
+    base_file = os.path.join(base_dir, ref)
+    if os.path.exists(base_file):
+        try:
+            base_content = _read_text_file(base_file)
+            result.setdefault(DEFAULT_LANGUAGE, base_content)
+        except Exception as e:
+            add_warning(src, "file_read_error",
+                        f"Failed to read {ref}: {str(e)}", type)
+
+    return result
+
+
+def resolve_localized_text(src, type, value) -> dict:
+    """Resolve a manifest text field into a ``{lang: text}`` mapping.
+
+    Supports three manifest authoring styles:
+    - plain string -> ``{DEFAULT_LANGUAGE: value}``
+    - ``@file.md`` reference -> localized markdown resolution (``.uk.md`` / ``.en.md``)
+    - mapping ``{uk: ..., en: ...}`` -> inline localized values where each value
+      may itself be a plain string or an ``@file.md`` reference.
+    """
+    if value is None:
+        return {}
+
+    if isinstance(value, dict):
+        result = {}
+        for lang, lang_value in value.items():
+            if lang not in SUPPORTED_LANGUAGES:
+                add_warning(src, "unknown_language",
+                            f"Unsupported language code '{lang}' (expected one of {SUPPORTED_LANGUAGES})", type)
+                continue
+            if isinstance(lang_value, str) and lang_value.startswith('@'):
+                ref_path = os.path.join(type + "s", src, lang_value[1:])
+                if os.path.exists(ref_path):
+                    try:
+                        result[lang] = _read_text_file(ref_path)
+                    except Exception as e:
+                        add_warning(src, "file_read_error",
+                                    f"Failed to read {lang_value[1:]}: {str(e)}", type)
+                else:
+                    add_warning(src, "missing_file",
+                                f"Localized file not found: {lang_value[1:]}", type)
+            elif lang_value is not None:
+                result[lang] = lang_value
+        return result
+
+    if isinstance(value, str):
+        if value.startswith('@'):
+            return resolve_localized_markdown(src, type, value[1:])
+        return {DEFAULT_LANGUAGE: value}
+
+    # Unknown scalar type, coerce to string under the default language
+    return {DEFAULT_LANGUAGE: str(value)}
+
+
+def pick_default_language(localized: dict) -> str:
+    """Return text for the default language, falling back to any available one."""
+    if not localized:
+        return ""
+    if localized.get(DEFAULT_LANGUAGE):
+        return localized[DEFAULT_LANGUAGE]
+    for lang in SUPPORTED_LANGUAGES:
+        if localized.get(lang):
+            return localized[lang]
+    for value in localized.values():
+        if value:
+            return value
+    return ""
+
+
+def build_localization_map(manifest) -> tuple:
+    """Combine per-field localized maps into a ``{lang: {field: text}}`` map.
+
+    Returns a tuple of ``(localization, languages)``.
+    """
+    field_keys = {
+        'name': 'name_localized',
+        'short_description': 'short_description_localized',
+        'description': 'description_localized',
+        'changelog': 'changelog_localized',
+    }
+
+    localization = {}
+    languages = set()
+    for lang in SUPPORTED_LANGUAGES:
+        entry = {}
+        for field, source_key in field_keys.items():
+            value = manifest.get(source_key, {}).get(lang)
+            if value:
+                entry[field] = value
+        if entry:
+            localization[lang] = entry
+            languages.add(lang)
+
+    return localization, sorted(languages, key=lambda l: SUPPORTED_LANGUAGES.index(l))
+
+
 def check_manifest(src, type) -> dict:
     manifest_path = os.path.join(type+"s", src, 'manifest.yml')
     logger.debug(f"Reading {manifest_path}", src)
@@ -904,7 +1052,14 @@ def check_manifest(src, type) -> dict:
         add_warning(src, "manifest_error", f"Failed to read manifest.yml: {str(e)}", type)
         return None
     
+    # A fully commented-out or empty manifest parses to None; skip it cleanly.
+    if not isinstance(manifest, dict):
+        add_warning(src, "disabled_manifest", "manifest.yml is empty or commented out (skipped)", type)
+        return None
+    
     if 'name' in manifest:
+        manifest['name_localized'] = resolve_localized_text(src, type, manifest['name'])
+        manifest['name'] = pick_default_language(manifest['name_localized'])
         logger.debug(f"Name: {manifest['name']}", src)
     else:
         add_warning(src, "missing_field", "Name not found in manifest file", type)
@@ -918,35 +1073,26 @@ def check_manifest(src, type) -> dict:
             return None
 
     if 'description' in manifest:
-        if manifest['description'][0] == '@':
-            try:
-                manifest['description'] = open(os.path.join(type+"s", src, manifest['description'][1:]), 'r').read()
-            except Exception as e:
-                add_warning(src, "file_read_error", f"Failed to read description file: {str(e)}", type)
-                manifest['description'] = ""
+        manifest['description_localized'] = resolve_localized_text(src, type, manifest['description'])
     else:
-        manifest['description'] = ""
+        manifest['description_localized'] = {}
+    manifest['description'] = pick_default_language(manifest['description_localized'])
     
     if 'short_description' in manifest:
-        if manifest['short_description'][0] == '@':
-            try:
-                manifest['short_description'] = open(os.path.join(type+"s", src, manifest['short_description'][1:]), 'r').read()
-            except Exception as e:
-                add_warning(src, "file_read_error", f"Failed to read short_description file: {str(e)}", type)
-                return None
+        manifest['short_description_localized'] = resolve_localized_text(src, type, manifest['short_description'])
+        if not manifest['short_description_localized']:
+            add_warning(src, "file_read_error", "Failed to resolve short_description", type)
+            return None
+        manifest['short_description'] = pick_default_language(manifest['short_description_localized'])
     else:
         add_warning(src, "missing_field", "Short Description not found in manifest file", type)
         return None
     
     if 'changelog' in manifest:
-        if(manifest['changelog'][0] == '@'):
-            try:
-                manifest['changelog'] = open(os.path.join(type+"s", src, manifest['changelog'][1:]), 'r').read()
-            except Exception as e:
-                add_warning(src, "file_read_error", f"Failed to read changelog file: {str(e)}", type)
-                manifest['changelog'] = ""
+        manifest['changelog_localized'] = resolve_localized_text(src, type, manifest['changelog'])
     else:
-        manifest['changelog'] = ""
+        manifest['changelog_localized'] = {}
+    manifest['changelog'] = pick_default_language(manifest['changelog_localized'])
 
     if 'author' not in manifest:
         add_warning(src, "missing_field", "Author not found in manifest file", type)
@@ -986,6 +1132,9 @@ def check_manifest(src, type) -> dict:
     # Validate all files exist
     if not validate_app_files(src, manifest, type):
         return None
+    
+    # Build combined localization map and the list of available languages
+    manifest['localization'], manifest['languages'] = build_localization_map(manifest)
     
     manifest['path'] = src.split('/')[-1]
 
@@ -1109,13 +1258,21 @@ def gen_authors_index(apps, mods) -> None:
                 with open(manifest_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                 author = data.get("author", "Unknown")
-                authors.setdefault(author, []).append({
+                entry = {
                     "name": data.get("name", app),
                     "short_description": data.get("short_description", ""),
                     "icon": data.get("icon", ""),
                     "path": app,
                     "type": "apps"
-                })
+                }
+                if data.get("languages"):
+                    entry["languages"] = data["languages"]
+                if data.get("localization"):
+                    entry["localization"] = {
+                        lang: {k: v for k, v in fields.items() if k in ("name", "short_description")}
+                        for lang, fields in data["localization"].items()
+                    }
+                authors.setdefault(author, []).append(entry)
             except Exception as e:
                 logger.warning(f"Failed to read manifest for authors index: {e}", app)
 
@@ -1126,13 +1283,21 @@ def gen_authors_index(apps, mods) -> None:
                 with open(manifest_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                 author = data.get("author", "Unknown")
-                authors.setdefault(author, []).append({
+                entry = {
                     "name": data.get("name", mod),
                     "short_description": data.get("short_description", ""),
                     "icon": data.get("icon", ""),
                     "path": mod,
                     "type": "mods"
-                })
+                }
+                if data.get("languages"):
+                    entry["languages"] = data["languages"]
+                if data.get("localization"):
+                    entry["localization"] = {
+                        lang: {k: v for k, v in fields.items() if k in ("name", "short_description")}
+                        for lang, fields in data["localization"].items()
+                    }
+                authors.setdefault(author, []).append(entry)
             except Exception as e:
                 logger.warning(f"Failed to read manifest for authors index: {e}", mod)
 

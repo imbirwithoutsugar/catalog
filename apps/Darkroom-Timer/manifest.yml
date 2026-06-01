@@ -1,4 +1,6 @@
-name: Darkroom Timer
+name:
+  uk: Таймер даркруму
+  en: Darkroom Timer
 sources:
   type: git
   location:
@@ -7,7 +9,9 @@ executionfile:
   type: binary
   location:
     origin: https://github.com/imaggg/lil-timer/releases/download/release/firmware.bin
-short_description: Таймер для даркруму
+short_description:
+  uk: Таймер для даркруму
+  en: Darkroom timer
 description: "@DESCRIPTION.md"
 author: "@imaggg"
 license: MIT

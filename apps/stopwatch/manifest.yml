@@ -1,4 +1,6 @@
-name: Секундомір (LUA)
+name:
+  uk: Секундомір (LUA)
+  en: Stopwatch (LUA)
 sources:
   type: git
   location:
@@ -7,8 +9,10 @@ entryfile:
   type: lua
   location:
     origin: https://raw.githubusercontent.com/lilka-dev/catalog/refs/heads/main/apps/stopwatch/stopwatch.lua
-short_description: Простий секундомір з колами для консолі Lilka
-description: "@README.md"
+short_description:
+  uk: Простий секундомір з колами для консолі Lilka
+  en: Simple stopwatch with laps for the Lilka console
+description: "@DESCRIPTION.md"
 author: "@sverdlyuk"
 license: MIT
 keira_version: 2.6.1

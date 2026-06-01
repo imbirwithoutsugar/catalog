@@ -1,5 +1,9 @@
-name: "LilCase"
-short_description: "Корпус для лілки з кількома версіями"
+name:
+  uk: "LilCase"
+  en: "LilCase"
+short_description:
+  uk: "Корпус для Лілки з кількома версіями"
+  en: "Lilka case with multiple versions"
 description: "@DESCRIPTION.md"
 author: "@KostyantynPol_996395"
 icon: "image1.png"

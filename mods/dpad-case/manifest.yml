@@ -1,5 +1,9 @@
-name: "Case for Lilka Dev Board - D-Pad Edition"
-short_description: "Корпус для Lilka Dev Board з доданою хрестовиною (D-Pad)"
+name:
+  uk: "Корпус для Lilka Dev Board — D-Pad Edition"
+  en: "Case for Lilka Dev Board - D-Pad Edition"
+short_description:
+  uk: "Корпус для Lilka Dev Board з доданою хрестовиною (D-Pad)"
+  en: "Case for Lilka Dev Board with an added D-Pad cross"
 description: "@DESCRIPTION.md"
 author: "@Shashel_1353421"
 icon: "image1.png"
